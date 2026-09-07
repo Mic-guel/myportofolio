@@ -13,3 +13,12 @@ Kelas: PBP D
 2. Tantangan yang paling sering saya hadapi adalah memahami dan menentukan cara untuk mengatur posisi, batas, ataupun jarak elemen di web. Saya mengevaluasinya dengan mengaturnya terlebih dahulu dalam tampilan desktop, lalu saya ubah ke tampilan mobile dan mencari elemen yang tampilannya tidak sesuai harapan
 
 3. Untuk sekarang, saya belum merasakan batasan apapun dalam menyajikan informasi pada portofolio.
+
+https://share.gemini.google/mNCS0YnQKRVS
+
+Saya menggunakan Gemini untuk membantu saya dalam pengerjaan tugas. Saya menggunakannya untuk memahami dan memeriksa kebenaran pengerjaan tugas saya. Contoh penggunaan AI dalam pengerjaan:
+1. Mengirimkan screenshot untuk memeriksa kebenaran struktur file
+2. Mencari kode warna dari gambar yang saya inginkan
+3. Menanyakan fungsi, format, atau penggunaan kode HTMl ataupun CSS
+4. Menanyakan cara melakukan sesuatu yang saya inginkan (membuat gap antarelemen)
+5. Menanyakan alasan dan cara menyelesaikan error
