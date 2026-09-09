@@ -32,9 +32,6 @@ SECRET_KEY = 'django-insecure-dog-g9_gps$3ai@=%i1!n+n@z+0s!9ox2zuki73!_z%%0fml37
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
