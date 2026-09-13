@@ -22,8 +22,9 @@ def show_experience(request):
     }
     return render(request, "experience.html", context)
 
-def show_projects(request):
+def show_project(request):
     context = {
         "name": "Micguel Katili",
-        "projects_list": Project.objects.all()
+        "project_list": Project.objects.all()
     }
+    return render(request, "project.html", context)
