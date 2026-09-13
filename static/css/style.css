@@ -38,6 +38,11 @@ body {
     color: var(--ink);
     background-color: var(--blue-p);
     line-height: 1.6;
+    background-image: url("/static/img/spider-man2099.png");
+    background-repeat: no-repeat;
+    background-position: right 100px;
+    background-size: min(500px, 20vw) auto;
+    
 }
 
 h1 {
@@ -51,7 +56,7 @@ h1 {
 
 .project-darken-h1 {
     color: var(--black-p);
-    text-shadow: 0 0 1px var(--red-p);
+    text-shadow: 0 0 1rem var(--red-p);
 }
 
 .project-section {
@@ -71,9 +76,25 @@ h1 {
 
 .project-card {
     padding: 1.25rem;
-    background-color: var(--red);
-    border: 3px solid var(--ink);
+    background-color: var(--red-p);
+    border: 3px solid var(--black-p);
     border-radius: var(--radius);
+    transition: border 0.2s ease;
+    transition: box shadow 0.2s ease;
+}
+
+.project-card:hover {
+    border: 3px solid var(--lightblue-p);
+    box-shadow: 0 0 5rem var(--red-p);
+}
+
+.project-footer {
+    padding: 1.5rem;
+    color: var(--black-p);
+    font-size: 0.85rem;
+    border-top: 3px solid var(--black-p);
+    border-bottom: 3px solid var(--black-p);
+    background-color: var(--red-p);
 }
 
 .section-kicker {
@@ -113,7 +134,7 @@ h1 {
     font-size: 0.85rem;
     font-weight: 600;
     text-decoration: none;
-    color: var(--paper);
+    color: var(--white-p);
     background-color: var(--lightblue-p);
     border-radius: var(--radius);
     padding: 0.5rem 0.7rem;
@@ -123,6 +144,11 @@ h1 {
 
 .top-right-p:hover {
     background-color: var(--blue-p);
+}
+
+.experience-img {
+    width: 100%;
+    height: auto;
 }
 
 .experience-section {
@@ -270,6 +296,7 @@ h1 {
     color: var(--paper);
     background-color: var(--light-blue);
     border-radius: var(--radius);
+    border: 1px solid var(--paper);
     padding: 0.5rem 0.7rem;
     transition: background-color 0.2s ease;
 }
