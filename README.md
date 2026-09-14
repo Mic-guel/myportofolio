@@ -5,6 +5,8 @@ Kelas: PBP D
 ==========Tugas 2==========
 Update: Membuat halaman Project. Di halaman ini, warna tema web berubah. Selain menambahkan card-card project seperti yang diminta tugas 2, ditambahkan juga fitur yang memberikan highlight terhadap card yang sedang ditunjuk oleh cursor. Warna border dari card berubah dan warna blur di sekitar card muncul, serta gambar tambahan di kanan atas halaman.
 
+Link percakapan dengan AI: https://share.gemini.google/fjsAFK7jmQG8
+
 1. Jelaskan alur yang terjadi ketika pengguna membuka halaman portofolio baru, mulai dari permintaan yang diterima proyek hingga data ditampilkan pada browser. Dalam jawabanmu, jelaskan peran urls.py proyek, urls.py aplikasi, view, model, dan template.
 ->urls.py di portofolio berfungsi untuk menyimpan url utama web, sedangkan urls.py main berfungsi untuk menyimpan url halaman-halaman lain, seperti /experience dan /projects. View itu tempat untuk menyimpan fungsi-fungsi yang menerima request dan mengembalikan sebuah tampilan. Model berisikan objek-objek yang nantinya akan ditampilkan. Template merupakan kerangka utama sebuah tampilan/web.
 
