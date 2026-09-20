@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from main.models import Experience, Achievement, Project
-from main.forms import ProjectForm
+from main.forms import*
 
 
 def show_main(request):
@@ -26,12 +26,57 @@ def show_experience(request):
     }
     return render(request, "experience.html", context)
 
-def show_achievement(request):
+def show_achievements(request):
+    json_response = get_achievements_json(request)
+
+    achievements = serializers.deserialize(
+        "json",
+        json_response.content.decode("utf-8"),
+    )
+    achievements = [achievements.object for achievement in achievements]
+    title_query = request.GET.get("title", "").strip()
+
     context = {
         "name": "Micguel Katili",
-        "achievement_list": Achievement.objects.all()
+        "achievement_list": Achievement.objects.all(),
+        "title_query": title_query,
     }
     return render(request, "achievement.html", context)
+
+def create_achievement(request):
+    form = AchievementForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "A new achievement has been successfully added!")
+        return redirect("main:show_achievements")
+
+    context = {
+        "name": "Micguel Katili",
+        "form": form,
+    }
+    return render(request, "achievements_form.html", context)
+
+def delete_achievement(request, achievement_id):
+    achievement = get_object_or_404(Achievement, pk=achievement_id)
+
+    if request.method == "POST":
+        achievement.delete()
+        messages.success(request, "Achievement has been successfully deleted")
+        return redirect("main:show_achievements")
+
+    return redirect("main:show_achievements")
+
+def get_achievements_json(request):
+    title_query = request.GET.get("title", "").strip()
+    achievements = Achievement.objects.all()
+
+    if title_query:
+        achievements = achievements.filter(title__icontains=title_query)
+
+    achievements_json = serializers.serialize("json", achievements)
+    return HttpResponse(achievements_json, content_type="application/json")
+    
 
 def show_projects(request):
     json_response = get_projects_json(request)
@@ -55,7 +100,7 @@ def create_project(request):
 
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, "Proyek baru berhasil ditambahkan!")
+        messages.success(request, "A new achievement has been successfully added!")
         return redirect("main:show_projects")
 
     context = {

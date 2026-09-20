@@ -208,8 +208,8 @@ h1 {
 }
 
 .project-search__input:focus {
-    outline: 2px solid var(--accent);
-    border-color: var(--accent);
+    outline: 2px solid var(--red);
+    border-color: var(--red);
 }
 
 .project-actions {
@@ -298,7 +298,7 @@ h1 {
     border: 0;
     padding: 0;
     background: transparent;
-    color: var(--text-muted);
+    color: var(--ink);
     font-size: 1.8rem;
     line-height: 1;
     cursor: pointer;
@@ -312,7 +312,7 @@ h1 {
 }
 
 .button-danger {
-    background: #b42318;
+    background: var(--red);
 }
 
 @media (max-width: 600px) {
@@ -376,7 +376,7 @@ h1 {
     width: 100%;
     box-sizing: border-box;
     padding: 0.7rem;
-    border: 1px solid var(--accent);
+    border: 1px solid var(--red);
     border-radius: var(--radius);
     font: inherit;
     transition:
@@ -386,12 +386,12 @@ h1 {
 
 .form-group input:focus,
 .form-group textarea:focus {
-    outline: 2px solid var(--accent);
-    border-color: var(--accent);
+    outline: 2px solid var(--red);
+    border-color: var(--red);
 }
 
 .form-error {
-    color: #b42318;
+    color: var(--red);
     font-size: 0.85rem;
     margin-top: 0.35rem;
 }
@@ -399,10 +399,10 @@ h1 {
 .button {
     display: inline-block;
     height: fit-content;
-    border: 0;
+    border: 3px solid var(--paper);
     border-radius: var(--radius);
     padding: 0.65rem 1rem;
-    background: var(--accent);
+    background: var(--light-blue);
     color: white;
     cursor: pointer;
     font: inherit;
@@ -419,7 +419,7 @@ h1 {
 /*============================================================*/
 
 .section-kicker {
-    color: var(--accent-dark);
+    color: var(--red);
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -449,13 +449,13 @@ h1 {
 
 .experience-card {
     padding: 1.25rem;
-    background-color: #fff;
-    border: 1px solid var(--line);
+    background-color: var(--red);
+    border: 3px solid var(--light-blue);
     border-radius: var(--radius);
 }
 
 .experience-category {
-    color: var(--accent-dark);
+    color: var(--red);
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -468,7 +468,7 @@ h1 {
 
 .experience-description,
 .empty-state {
-    color: var(--text-muted);
+    color: var(--ink);
 }
 
 .experience-status {
@@ -576,7 +576,7 @@ h1 {
     color: var(--paper);
     background-color: var(--light-blue);
     border-radius: var(--radius);
-    border: 1px solid var(--paper);
+    border: 3px solid var(--paper);
     padding: 0.5rem 0.7rem;
     transition: background-color 0.2s ease;
 }

@@ -1,6 +1,6 @@
 from django.forms import ModelForm, TextInput, Textarea, URLInput
 
-from main.models import Project
+from main.models import*
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -8,17 +8,15 @@ class ProjectForm(ModelForm):
         fields = [
             "title",
             "description",
-            "tech_stack",
             "project_url",
             "project_image_url",
         ]
 
         labels = {
-            "title": "Nama Proyek",
-            "description": "Deskripsi Proyek",
-            "tech_stack": "Teknologi yang Digunakan",
-            "project_url": "URL Proyek",
-            "project_image_url": "URL Gambar Proyek",
+            "title": "Project's Name",
+            "description": "Project's Description",
+            "project_url": "Supporting Project's URL",
+            "project_image_url": "Project Picture's URL",
         }
 
         widgets = {
@@ -30,23 +28,53 @@ class ProjectForm(ModelForm):
             ),
             "description": Textarea(
                 attrs={
-                    "placeholder": "Ceritakan Proyekmu",
+                    "placeholder": "Describe the project.",
                     "rows": 3,
-                }
-            ),
-            "tech_stack": TextInput(
-                attrs={
-                    "placeholder": "Django, Python, HTML, CSS",
                 }
             ),
             "project_url": URLInput(
                 attrs={
-                    "placeholder": "https://github.com/Mic-guel",
+                    "placeholder": "https://github.com/",
                 }
             ),
             "project_image_url": URLInput(
                 attrs={
-                    "placeholder": "https://drive.google.com/thumbnail?id=...&sz=w1000",
+                    "placeholder": "https://drive.google.com/",
+                }
+            ),
+        }
+
+class AchievementForm(ModelForm):
+    class Meta:
+        model = Achievement
+        fields = [
+            "title",
+            "description",
+            "achievement_iamge_url",
+        ]
+
+        labels = {
+            "title": "Achievement's Name",
+            "description": "Achievement's Description",
+            "achievement_image_url": "Achievement Picture's URL",
+        }
+
+        widgets = {
+            "title": TextInput(
+                attrs={
+                    "placeholder": "Portfolio Website",
+                    "maxlength": 255,
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "placeholder": "Describe the Achievement.",
+                    "rows": 3,
+                }
+            ),
+            "achievement_image_url": URLInput(
+                attrs={
+                    "placeholder": "https://drive.google.com/",
                 }
             ),
         }
