@@ -33,12 +33,12 @@ def show_achievements(request):
         "json",
         json_response.content.decode("utf-8"),
     )
-    achievements = [achievements.object for achievement in achievements]
+    achievements = [achievement.object for achievement in achievements]
     title_query = request.GET.get("title", "").strip()
 
     context = {
         "name": "Micguel Katili",
-        "achievement_list": Achievement.objects.all(),
+        "achievement_list": achievements,
         "title_query": title_query,
     }
     return render(request, "achievement.html", context)

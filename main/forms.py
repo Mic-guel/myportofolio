@@ -50,7 +50,7 @@ class AchievementForm(ModelForm):
         fields = [
             "title",
             "description",
-            "achievement_iamge_url",
+            "achievement_image_url",
         ]
 
         labels = {

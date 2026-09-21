@@ -7,7 +7,7 @@ class Achievement(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     month_year = models.CharField(max_length=31,default="")
-    pict = models.URLField(blank=True, null=True)
+    achievement_image_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.title
