@@ -1,28 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base1.html" %}
+    {% block meta %}
     <title>Experience - {{ name }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-
-<body class="body-a">
-    <header class="header-a">
-        <div class="container-a">
-            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
-            <nav>                
-                <a class="top-right-a" href="{% url 'main:show_main' %}">Profile</a>
-                <a class="top-right-a" href="{% url 'main:show_main' %}#skills">Skills</a>
-                <a class="top-right-a" href="{% url 'main:show_experience' %}">Experience</a>
-                <a class="top-right-a" href="{% url 'main:show_achievements' %}">Achievements</a>
-                <a class="top-right-a" href="{% url 'main:show_projects' %}">Projects</a>                 
-            </nav>
-        </div>
-    </header>
+    {% endblock meta %}
+    {% block content %} 
 
     <main>
         <section class="section-a" id="achievement">
@@ -56,9 +36,12 @@
                                      class="achievement-image">
                             {% endif %}
                             <h2>{{ achievement.title }}</h2>
-                            <p class="achievement-description">
-                                {{ achievement.description }}
-                            </p>
+                            <p class="achievement-description">{{ achievement.description }}</p>
+                            <div class="project-card-actions">
+                                <div class="project-actions">
+                                    {% include "components/achievement_delete_modal.html" with achievement=achievement %}
+                                </div>
+                            </div>
                             <h5>{{ achievement.month_year }}</h5>
                         </article>
                     {% empty %}
@@ -70,11 +53,4 @@
             </div>
         </section>
     </main>
-
-    <footer class="footer-a">
-        <div class="container">
-            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
-        </div>
-    </footer>
-</body>
-</html>
+    {% endblock content %}

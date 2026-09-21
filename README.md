@@ -2,6 +2,9 @@ Nama: Micguel Katili
 NPM: 2506588065
 Kelas: PBP D
 
+
+==========Tugas 3==========
+
 ==========Tugas 2==========
 Update: Membuat halaman Project. Di halaman ini, warna tema web berubah. Selain menambahkan card-card project seperti yang diminta tugas 2, ditambahkan juga fitur yang memberikan highlight terhadap card yang sedang ditunjuk oleh cursor. Warna border dari card berubah dan warna blur di sekitar card muncul, serta gambar tambahan di kanan atas halaman.
 

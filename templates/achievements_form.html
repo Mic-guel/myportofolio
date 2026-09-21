@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base1.html" %}
 {% block meta %}
     <title>Add Achievement - {{ name }}</title>
 {% endblock meta %}
@@ -6,22 +6,22 @@
     <main>
         <section class="experience-section">
             <div class="container">
-                <h1>Add A New Achievement</h1>
+                <h1 class="h1-a">Add A New Achievement</h1>
                 <form method="post"
                       action="{% url 'main:create_achievement' %}"
-                      class="project-form">
+                      class="form-a">
                     {% csrf_token %}
                     {% for field in form %}
-                        <div class="form-group">
+                        <div class="form-group-a">
                             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                             {{ field }}
                             {% for error in field.errors %}
-                                <p class="form-error">{{ error }}</p>
+                                <p class="form-error-a">{{ error }}</p>
                             {% endfor %}
                         </div>
                     {% endfor %}
-                    <button type="submit" class="button">Add Achievement</button>
-                    <a href="{% url 'main:show_achievements' %}" class="button button-secondary">Cancel</a>
+                    <button type="submit" class="button-a">Add Achievement</button>
+                    <a href="{% url 'main:show_achievements' %}" class="button-a">Cancel</a>
                 </form>
             </div>
         </section>

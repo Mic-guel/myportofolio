@@ -171,6 +171,82 @@ h1 {
     box-shadow: 0 0 3rem var(--red-a);
 }
 
+.form-a {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 1.5rem;
+}
+
+.form-group-a {
+    margin-bottom: 1.25rem;
+}
+
+.form-group-a label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+    color: var(--red-a);
+}
+
+.form-group-a input,
+.form-group-a textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.7rem;
+    border: 1px solid var(--red-a);
+    border-radius: var(--radius);
+    font: inherit;
+    transition:
+        border-color 0.2s ease,
+        outline-color 0.2s ease;
+}
+
+.form-group-a input:focus,
+.form-group-a textarea:focus {
+    outline: 2px solid var(--red-a);
+    border-color: var(--red-a);
+}
+
+.form-error-a {
+    color: var(--red-a);
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+}
+
+.delete-modal__content-a {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 480px);
+    padding: 1.5rem;
+    background: var(--blue-a);
+    border: 3px solid var(--red-a);
+    border-radius: var(--radius);
+    box-shadow: 0 1rem 3rem rgba(28, 25, 23, 0.22);
+    transition: 0.2s ease;
+}
+
+.delete-modal__content-a:hover {
+    box-shadow: 0 0 10rem var(--red-a);
+}
+
+.delete-modal__close-a {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--lightblue-a);
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.delete-modal__close-a:hover {
+    color: var(--red-a);
+}
+
 /*============================================================*/
 /*Border for achievement's class section
 /*============================================================*/
@@ -436,7 +512,7 @@ h1 {
 }
 
 .button-secondary {
-    background: var(--ink);
+    background: var(--light-blue);
 }
 
 /*============================================================*/
