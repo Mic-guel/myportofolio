@@ -1,0 +1,56 @@
+{% extends "base1.html" %}
+    {% block meta %}
+    <title>Experience - {{ name }}</title>
+    {% endblock meta %}
+    {% block content %} 
+
+    <main>
+        <section class="section-a" id="achievement">
+            <div class="container">
+                <p class="hero-kicker">My achievement so far...</p>
+                <div class="bar-a">
+                    <h1 class="h1-a">Achievements</h1>
+                    <a href="{% url 'main:create_achievement' %}"
+                       class="button-a add-button-a">
+                        <span aria-hidden="true">+</span>
+                        Add achievement
+                    </a>
+                </div>                  
+                <form method="get"
+                      action="{% url 'main:show_achievements' %}"
+                      class="project-search">
+                    <input type="search"
+                           name="title"
+                           value="{{ title_query }}"
+                           placeholder="Search based on achievement's name"
+                           class="project-search__input"
+                           aria-label="Search based on achievement's name">
+                    <button type="submit" class="button-a">Search</button>
+                </form>
+                <div class="grid-a">
+                    {% for achievement in achievement_list %}
+                        <article class="card-a">
+                            {% if achievement.achievement_image_url %}
+                                <img src="{{ achievement.achievement_image_url }}"
+                                     alt="Gambar {{ achievement.title }}"
+                                     class="achievement-image">
+                            {% endif %}
+                            <h2>{{ achievement.title }}</h2>
+                            <p class="achievement-description">{{ achievement.description }}</p>
+                            <div class="project-card-actions">
+                                <div class="project-actions">
+                                    {% include "components/achievement_delete_modal.html" with achievement=achievement %}
+                                </div>
+                            </div>
+                            <h5>{{ achievement.month_year }}</h5>
+                        </article>
+                    {% empty %}
+                        <p class="empty-state">
+                            No achievement so far...
+                        </p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+    {% endblock content %}

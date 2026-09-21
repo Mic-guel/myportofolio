@@ -2,6 +2,31 @@ Nama: Micguel Katili
 NPM: 2506588065
 Kelas: PBP D
 
+Update: Membuat halaman achievement yang memiliki fitur untuk emnambahkan dan menghapus achievement.
+
+1. Menggunakan ModelForm mempermudah penambahan elemen tanpa harus menulis ulang kode. csrf_token digunakan untuk mencegah instruksi-instruksi/request-request yang dikirim dari aplikasi lain masuk dan mengubah data yang ada.
+2. JSON lebih mudah untuk dimengerti.
+3. Klien->Request URL->Django->Serializer function->Response. Mentranslasikan kompleksitas struktur data menjadi format string yang bersifat universal
+
+Link percakapan dengan AI: https://share.gemini.google/lb6XXToHRoVX
+==========Tugas 3==========
+
+==========Tugas 2==========
+Update: Membuat halaman Project. Di halaman ini, warna tema web berubah. Selain menambahkan card-card project seperti yang diminta tugas 2, ditambahkan juga fitur yang memberikan highlight terhadap card yang sedang ditunjuk oleh cursor. Warna border dari card berubah dan warna blur di sekitar card muncul, serta gambar tambahan di kanan atas halaman.
+
+Link percakapan dengan AI: https://share.gemini.google/fjsAFK7jmQG8
+
+1. Jelaskan alur yang terjadi ketika pengguna membuka halaman portofolio baru, mulai dari permintaan yang diterima proyek hingga data ditampilkan pada browser. Dalam jawabanmu, jelaskan peran urls.py proyek, urls.py aplikasi, view, model, dan template.
+->urls.py di portofolio berfungsi untuk menyimpan url utama web, sedangkan urls.py main berfungsi untuk menyimpan url halaman-halaman lain, seperti /experience dan /projects. View itu tempat untuk menyimpan fungsi-fungsi yang menerima request dan mengembalikan sebuah tampilan. Model berisikan objek-objek yang nantinya akan ditampilkan. Template merupakan kerangka utama sebuah tampilan/web.
+
+2. Mengapa data untuk bagian portofolio baru sebaiknya disimpan pada model dan tidak ditulis langsung di dalam template? Jelaskan dampaknya terhadap kemudahan pemeliharaan dan pengembangan aplikasi.
+Setelah bertanya ke AI, ternyata tidak melakukan hard-code itu lebih mudah untuk pengembangan. Misal datanya ada banyak, berarti semakin banyak line di file -> semakin sulit untuk diubah. Bisa juga memunculkan inkonsistensi karena kelupaan atribut misalnya. Mengandalkannya ke database juga sebuah kebiasaan yang baik, terutama jika data bisa berubah-ubah (bertambah/berkurang) atau skalanya besar.
+
+3. Apa perbedaan fungsi makemigrations dan migrate pada Django? Berikan contoh perubahan model yang mengharuskanmu menjalankan kedua perintah tersebut.
+makemigrations = Membuat persiapan untuk migrasi, misalnya membuat tabel berdasarkan entity/class dan atributnya. Sedangkan, migrate itu untuk mengintegrasikan hasil persiapan yang telah dilakukan oleh makemigrations ke database.
+==========Tugas 2==========
+
+==========Tugas 1==========
 1. Pada Tutorial dan Tugas 1, Anda diberi kebebasan untuk menentukan tampilan dari website portofolio Anda. Saat Anda merancang struktur HTML yang digunakan, apakah Anda menggunakan elemen semantik HTML5 seperti <section>, <article>, atau <aside>? Jika iya, bagaimana elemen tersebut membantu Anda dalam membuat static web? Jika tidak, mengapa tanpa elemen tersebut sudah memenuhi kebutuhan desain Anda?
 
 2. Ketika Anda mengatur CSS Anda agar tetap responsive, tantangan tata letak apa yang Anda temukan? Bagaimana Anda mengevaluasi elemen mana yang harus diubah posisinya atau diprioritaskan ukurannya saat berpindah dari tampilan desktop ke mobile?
