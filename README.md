@@ -2,7 +2,13 @@ Nama: Micguel Katili
 NPM: 2506588065
 Kelas: PBP D
 
+Update: Membuat halaman achievement yang memiliki fitur untuk emnambahkan dan menghapus achievement.
 
+1. Menggunakan ModelForm mempermudah penambahan elemen tanpa harus menulis ulang kode. csrf_token digunakan untuk mencegah instruksi-instruksi/request-request yang dikirim dari aplikasi lain masuk dan mengubah data yang ada.
+2. JSON lebih mudah untuk dimengerti.
+3. Klien->Request URL->Django->Serializer function->Response. Mentranslasikan kompleksitas struktur data menjadi format string yang bersifat universal
+
+Link percakapan dengan AI: https://share.gemini.google/lb6XXToHRoVX
 ==========Tugas 3==========
 
 ==========Tugas 2==========
