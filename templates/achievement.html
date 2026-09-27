@@ -10,11 +10,13 @@
                 <p class="hero-kicker">My achievement so far...</p>
                 <div class="bar-a">
                     <h1 class="h1-a">Achievements</h1>
+                    {% if user.is_superuser %}
                     <a href="{% url 'main:create_achievement' %}"
                        class="button-a add-button-a">
                         <span aria-hidden="true">+</span>
                         Add achievement
                     </a>
+                    {% endif %}
                 </div>                  
                 <form method="get"
                       action="{% url 'main:show_achievements' %}"
@@ -39,7 +41,9 @@
                             <p class="achievement-description">{{ achievement.description }}</p>
                             <div class="project-card-actions">
                                 <div class="project-actions">
+                                    {% if user.is_superuser %}
                                     {% include "components/achievement_delete_modal.html" with achievement=achievement %}
+                                    {% endif %}
                                 </div>
                             </div>
                             <h5>{{ achievement.month_year }}</h5>

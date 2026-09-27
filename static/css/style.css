@@ -144,6 +144,19 @@ h1 {
     background-color: var(--blue-a);
 }
 
+.acc-feat-a {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--white-a);
+    background-color: var(--blue-a);
+    border-radius: var(--radius);
+    padding: 0.5rem 0.7rem;
+    border: 3px solid var(--black-a);
+}
+
+
 .add-button-a {
     display: inline-flex;
     align-items: center;
@@ -519,6 +532,36 @@ h1 {
 /*Border for project's class section
 /*============================================================*/
 
+/*============================================================*/
+/*Classes for Star feature
+/*============================================================*/
+
+.star-form {
+    display: inline;
+}
+
+.button-star {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--light-blue);
+}
+
+.button-star.is-starred {
+    background: var(--yellow);
+}
+
+.star-count {
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.25);
+    font-size: 0.8rem;
+}
+
+/*============================================================*/
+/*Border for star's class section
+/*============================================================*/
+
 .section-kicker {
     color: var(--red);
     font-size: 0.8rem;
@@ -679,11 +722,22 @@ h1 {
     border-radius: var(--radius);
     border: 3px solid var(--paper);
     padding: 0.5rem 0.7rem;
-    transition: background-color 0.2s ease;
 }
 
 .top-right:hover {
     background-color: var(--yellow);
+}
+
+.acc-feat {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--paper);
+    background-color: var(--blue);
+    border-radius: var(--radius);
+    border: 3px solid var(--paper);
+    padding: 0.5rem 0.7rem;
 }
 
 .bio {
