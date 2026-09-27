@@ -194,6 +194,25 @@ def delete_project(request, project_id):
 
     return redirect("main:show_projects")
 
+@login_required
+def update_project(request, id):
+    is_editor = request.user.groups.filter(name='Editor').exists()
+    
+    if not (request.user.is_superuser or is_editor):
+        raise PermissionDenied("You don't have the right to change this informations.")
+
+    project = get_object_or_404(Project, pk=id)
+    form = ProjectForm(request.POST or None, instance=project)
+
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('main:show_main')
+
+    context = {
+        'project': project,
+    }
+    return render(request, 'update_project.html', context)
+
 def get_projects_json(request):
     title_query = request.GET.get("title", "").strip()
     projects = Project.objects.all()
