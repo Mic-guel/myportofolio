@@ -17,6 +17,8 @@ from main.forms import*
 
 def show_main(request):
     last_login = request.COOKIES.get('last_login', "Haven't made a login session/cookie was not found")
+    is_editor = request.user.groups.filter(name='Editor').exists()
+
     context = {
         "name": "Micguel Katili",
         "npm": "2506588065",
@@ -25,6 +27,7 @@ def show_main(request):
             "CS Student at Universitas Indonesia who's still trying to survive. Can't really tell whether I belong here or not, but I'm glad that I can endure this hardship that many people seek"
         ),
         "last_login": last_login,
+        "is_editor" : is_editor,
     }
     return render(request, "index.html", context)
 
@@ -79,14 +82,18 @@ def toggle_star(request, project_id):
     return redirect("main:show_projects")
 
 def show_experience(request):
+    is_editor = request.user.groups.filter(name='Editor').exists()
+
     context = {
         "name": "Micguel Katili",
         "experience_list": Experience.objects.all(),
+        "is_editor" : is_editor,
     }
     return render(request, "experience.html", context)
 
 def show_achievements(request):
     json_response = get_achievements_json(request)
+    is_editor = request.user.groups.filter(name='Editor').exists()
 
     achievements = serializers.deserialize(
         "json",
@@ -99,6 +106,7 @@ def show_achievements(request):
         "name": "Micguel Katili",
         "achievement_list": achievements,
         "title_query": title_query,
+        "is_editor" : is_editor,
     }
     return render(request, "achievement.html", context)
 
@@ -147,6 +155,7 @@ def get_achievements_json(request):
 
 def show_projects(request):
     json_response = get_projects_json(request)
+    is_editor = request.user.groups.filter(name='Editor').exists()
 
     projects = serializers.deserialize(
         "json",
@@ -159,11 +168,13 @@ def show_projects(request):
         "name": "Micguel Katili",
         "project_list": projects,
         "title_query": title_query,
+        "is_editor" : is_editor,
     }
     return render(request, "project.html", context)
 
 @login_required
 def create_project(request):
+    is_editor = request.user.groups.filter(name='Editor').exists()
     if not request.user.is_superuser:
         raise PermissionDenied
     
@@ -177,6 +188,7 @@ def create_project(request):
     context = {
         "name": "Micguel Katili",
         "form": form,
+        "is_editor" : is_editor,
     }
     return render(request, "projects_form.html", context)
 
@@ -212,6 +224,7 @@ def edit_project(request, project_id):
         'project': project,
         'form' : form,
         'name' : "Micguel Katili",
+        "is_editor" : is_editor,
         
     }
     return render(request, 'edit_project.html', context)

@@ -562,6 +562,29 @@ h1 {
 /*Border for star's class section
 /*============================================================*/
 
+.acc-feat {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--paper);
+    background-color: var(--blue);
+    border-radius: var(--radius);
+    border: 3px solid var(--paper);
+    padding: 0.5rem 0.7rem;
+}
+
+.acc-aku-atmin {
+    background-color: var(--yellow);
+    color: var(--black-a);
+    box-shadow: 0 0 3rem 1rem var(--yellow);
+}
+
+.acc-editor-handal {
+    background-color: var(--yellow);
+    color: var(--black-a);
+}
+
 .section-kicker {
     color: var(--red);
     font-size: 0.8rem;
@@ -726,18 +749,6 @@ h1 {
 
 .top-right:hover {
     background-color: var(--yellow);
-}
-
-.acc-feat {
-    display: inline-block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-decoration: none;
-    color: var(--paper);
-    background-color: var(--blue);
-    border-radius: var(--radius);
-    border: 3px solid var(--paper);
-    padding: 0.5rem 0.7rem;
 }
 
 .bio {

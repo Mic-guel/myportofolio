@@ -21,13 +21,19 @@
                 <a class="top-right" href="{% url 'main:show_experience' %}">Experience</a>
                 <a class="top-right" href="{% url 'main:show_achievements' %}">Achievements</a>
                 <a class="top-right" href="{% url 'main:show_projects' %}">Projects</a>         
-                {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                    <span class="acc-feat acc-aku-atmin">{{ user.username }}</span>
                     <a class="top-right" href="{% url 'main:logout' %}">Logout</a>
-                    <span class="acc-feat">{{ user.username }}</span>                    
+                {% elif is_editor %}
+                    <span class="acc-feat acc-editor-handal">{{ user.username }}</span>
+                    <a class="top-right" href="{% url 'main:logout' %}">Logout</a>                     
+                {% elif user.is_authenticated %}
+                    <span class="acc-feat">{{ user.username }}</span>
+                    <a class="top-right" href="{% url 'main:logout' %}">Logout</a>                    
                 {% else %}
                     <a class="top-right" href="{% url 'main:login' %}">Login</a>
                     <a class="top-right" href="{% url 'main:register' %}">Register</a>
-                {% endif %}       
+                {% endif %}         
             </nav>
         </div>
     </header>
