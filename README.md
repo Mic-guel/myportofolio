@@ -2,7 +2,10 @@ Nama: Micguel Katili
 NPM: 2506588065
 Kelas: PBP D
 
-Update: Membuat 
+Update: Membuat role editor yang memiliki hak lebih dari pengguna biasa, yaitu bisa mengubah informasi dari proyek-proyek yang sudah ada. Menambahkan fitur yang memberikan warna berbeda untuk kotak nama pengguna yang terletak di kanan atas bagi pengguna yang memiliki role spesial. Saat teks ini dibuat, hanya tersedia role editor dan super user.
+
+Link percakapan dengan AI: https://share.gemini.google/EXAz8Jqw2naM
+Penggunaan AI tidak semata-mata untuk meminta kode dan menyalinnya. Seandainya ada bagian yang tidak saya ketahui, saya meminta kode yang diperlukan ke AI, meminta penjelasannya, format syntax, dan variasi yang mungkin dari function/kode tersebut. Kode yang diberikan AI juga umumnya tidak bisa langsung bekerja karena kurangnya pengetahuan akan struktur file dan kode secara keseluruhan. Saya tetap harus mengintegrasikannya sendiri.
 ==========Tugas 4==========
 
 ==========Tugas 3==========
