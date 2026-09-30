@@ -103,9 +103,6 @@
     {% endif %}
     
     <script>
-
-    const SEARCH_DEBOUNCE_DELAY = 300;
-    let searchDebounceTimer;
     // Konfigurasi
     const BASE_PROJECTS_ENDPOINT = "{% url 'main:get_projects_json' %}";
     const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
@@ -119,6 +116,8 @@
     const searchForm = document.getElementById('project-search-form');
     const searchInput = document.getElementById('search-input');
 
+    const SEARCH_DEBOUNCE_DELAY = 300;
+    let searchDebounceTimer;
     // Menyembunyikan/Menampilkan section halaman
     function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
         loadingState.classList.toggle('hide', !showLoading);
