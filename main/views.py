@@ -11,6 +11,10 @@ from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
+from django.views.decorators.http import require_POST
+
+from django.http import JsonResponse
+
 from main.models import Experience, Achievement, Project
 from main.forms import*
 
@@ -92,19 +96,12 @@ def show_experience(request):
     return render(request, "experience.html", context)
 
 def show_achievements(request):
-    json_response = get_achievements_json(request)
     is_editor = request.user.groups.filter(name='Editor').exists()
 
-    achievements = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    achievements = [achievement.object for achievement in achievements]
     title_query = request.GET.get("title", "").strip()
 
     context = {
         "name": "Micguel Katili",
-        "achievement_list": achievements,
         "title_query": title_query,
         "is_editor" : is_editor,
     }
@@ -144,31 +141,43 @@ def delete_achievement(request, achievement_id):
 
 def get_achievements_json(request):
     title_query = request.GET.get("title", "").strip()
-    achievements = Achievement.objects.all()
+    achievements = Achievement.objects.prefetch_related('starred_by').all()
 
     if title_query:
-        achievements = achievements.filter(title__icontains=title_query)
+        achievements = Achievement.filter(title__icontains=title_query)
 
-    achievements_json = serializers.serialize("json", achievements)
-    return HttpResponse(achievements_json, content_type="application/json")
+    # Konstruksi data JSON secara manual agar bisa menyisipkan logika Star
+    data = []
+    for achievement in achievements:
+        starred_users = achievement.starred_by.all()
+        is_starred = request.user in starred_users if request.user.is_authenticated else False
+        starred_by_names = ", ".join([u.username for u in starred_users])
+
+        data.append({
+            "pk": str(achievement.id),
+            "fields": {
+                "title": achievement.title,
+                "description": achievement.description,
+                "month_year": achievement.month_year,
+                "achievement_image_url": achievement.achievement_image_url,
+                "star_count": starred_users.count(),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            }
+        })
+    return JsonResponse(data, safe=False)
     
 
 def show_projects(request):
-    json_response = get_projects_json(request)
     is_editor = request.user.groups.filter(name='Editor').exists()
 
-    projects = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    projects = [project.object for project in projects]
     title_query = request.GET.get("title", "").strip()
 
     context = {
         "name": "Micguel Katili",
-        "project_list": projects,
         "title_query": title_query,
         "is_editor" : is_editor,
+        "form" : ProjectForm(),
     }
     return render(request, "project.html", context)
 
@@ -231,10 +240,48 @@ def edit_project(request, project_id):
 
 def get_projects_json(request):
     title_query = request.GET.get("title", "").strip()
-    projects = Project.objects.all()
+    projects = Project.objects.prefetch_related('starred_by').all()
 
     if title_query:
         projects = projects.filter(title__icontains=title_query)
 
-    projects_json = serializers.serialize("json", projects, use_natural_foreign_keys=True)
-    return HttpResponse(projects_json, content_type="application/json")
+    # Konstruksi data JSON secara manual agar bisa menyisipkan logika Star
+    data = []
+    for project in projects:
+        starred_users = project.starred_by.all()
+        is_starred = request.user in starred_users if request.user.is_authenticated else False
+        starred_by_names = ", ".join([u.username for u in starred_users])
+
+        data.append({
+            "pk": str(project.id),
+            "fields": {
+                "title": project.title,
+                "description": project.description,
+                "tech_stack": project.tech_stack,
+                "project_url": project.project_url,
+                "project_image_url": project.project_image_url,
+                "star_count": starred_users.count(),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
+
+@require_POST
+def create_project_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan proyek."},
+            status=403,
+        )
+
+    form = ProjectForm(request.POST)
+    if form.is_valid():
+        project = form.save()
+        return JsonResponse(
+            {"message": "Proyek berhasil ditambahkan.", "pk": str(project.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
