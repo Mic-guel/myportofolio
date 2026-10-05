@@ -104,7 +104,7 @@ def show_achievements(request):
         "name": "Micguel Katili",
         "title_query": title_query,
         "is_editor" : is_editor,
-        "form" : ProjectForm(),
+        "form" : AchievementForm(),
     }
     return render(request, "achievement.html", context)
 
@@ -145,7 +145,7 @@ def get_achievements_json(request):
     achievements = Achievement.objects.prefetch_related('starred_by').all()
 
     if title_query:
-        achievements = Achievement.filter(title__icontains=title_query)
+        achievements = achievement.filter(title__icontains=title_query)
 
     # Konstruksi data JSON secara manual agar bisa menyisipkan logika Star
     data = []
@@ -286,10 +286,6 @@ def create_project_ajax(request):
         )
 
     return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
-
-from django.views.decorators.http import require_POST
-
-...
 
 @require_POST
 def create_achievement_ajax(request):

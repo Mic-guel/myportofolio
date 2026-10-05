@@ -156,7 +156,6 @@
             <p class="experience-description">${escapeHtml(achievement.description)}</p>
             <div class="project-card-actions">
                 <div class="project-actions">
-                    ${urlHtml}
                     
                     <form method="post" action="${starUrl}" class="star-form">
                         {% csrf_token %}
@@ -228,7 +227,7 @@
                 showToast('Failed to add achievement:', errorMessages.join(' '), 'error');
             }
         } catch (error) {
-            console.error('Error adding project:', error);
+            console.error('Error adding achievement:', error);
             showToast('Failed to add achievement', 'Can not be connected to server. Try again.', 'error');
         } finally {
             submitButton.disabled = false;

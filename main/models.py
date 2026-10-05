@@ -10,6 +10,10 @@ class Achievement(models.Model):
     month_year = models.CharField(max_length=31,default="")
     achievement_image_url = models.URLField(blank=True, null=True)
 
+    starred_by = models.ManyToManyField(
+        User, related_name="starred_achievements", blank=True
+    )    
+
     def __str__(self):
         return self.title
 
