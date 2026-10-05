@@ -2,6 +2,21 @@ Nama: Micguel Katili
 NPM: 2506588065
 Kelas: PBP D
 
+Update: Mengaplikasikan tutorial 5 pada page lain
+
+Link percakapan dengan AI: https://share.gemini.google/VoFaQJvRabLe
+
+1. Debouncing pada Fitur Pencarian AJAX   Pengertian: Debouncing adalah teknik pemrograman yang menunda eksekusi sebuah fungsi sampai ada jeda waktu tertentu (misalnya 300ms) sejak pemicu fungsi tersebut terakhir kali dipanggil.Urgensi pada AJAX: Saat pengguna mengetik di kolom pencarian, pengetikan sering terjadi dengan sangat cepat. Tanpa debouncing, setiap ketikan tombol (keystroke) akan langsung memicu pengiriman request HTTP ke server. Hal ini menyebabkan server kelebihan beban akibat spam request, pemborosan bandwidth, dan potensi terjadinya race condition (respons dari request yang lama datang terlambat dan menimpa hasil dari request yang lebih baru). Debouncing memastikan request hanya dikirim saat pengguna sudah berhenti mengetik sejenak.
+
+2. Penggunaan await pada fetch()   Fungsi await: Fungsi fetch() bersifat asinkron dan secara bawaan mengembalikan sebuah Promise. Keyword await digunakan untuk menjeda eksekusi kode di baris tersebut sampai Promise dari fetch() selesai diproses (resolved) oleh jaringan dan mengembalikan objek Response dari server.Jika await tidak digunakan: Eksekusi kode tidak akan menunggu proses pengambilan data selesai. JavaScript akan langsung mengeksekusi baris kode berikutnya. Variabel yang menampung hasil fetch() hanya akan berisi objek Promise dengan status pending, bukan data aktual dari server. Ini akan menyebabkan error saat kode selanjutnya mencoba membaca atau merender data (seperti JSON) karena datanya belum benar-benar tiba.
+
+3. Serangan XSS (Cross-Site Scripting)   Pengertian: XSS adalah kerentanan keamanan di mana penyerang berhasil menyisipkan skrip klien (client-side script, biasanya JavaScript) berbahaya ke dalam situs web yang sah. Saat pengguna lain membuka halaman tersebut, browser mereka akan mengeksekusi skrip tersebut, yang dapat berujung pada pencurian cookie, token sesi, atau pembajakan akun.Kerentanan pada AJAX/JavaScript vs Django Template: Saat menampilkan data melalui JavaScript (misalnya DOM manipulation menggunakan innerHTML), browser akan membaca dan mengeksekusi tag HTML atau skrip apa pun yang ada di dalam string data tersebut secara mentah-mentah jika pengembang tidak melakukan pembersihan (sanitization) secara manual. Sebaliknya, template bawaan Django memiliki mekanisme perlindungan auto-escaping. Sebelum dikirim ke browser, Django secara otomatis mendeteksi dan mengubah karakter berbahaya (seperti mengubah <script> menjadi &lt;script&gt;). Ini menetralkan skrip sehingga browser hanya membacanya sebagai teks biasa dan tidak mengeksekusinya.
+
+Saya mengakui jawaban saya dibuat oleh AI
+==========Tugas 5==========
+
+==========Tugas 4==========
+
 Update: Membuat role editor yang memiliki hak lebih dari pengguna biasa, yaitu bisa mengubah informasi dari proyek-proyek yang sudah ada. Menambahkan fitur yang memberikan warna berbeda untuk kotak nama pengguna yang terletak di kanan atas bagi pengguna yang memiliki role spesial. Saat teks ini dibuat, hanya tersedia role editor dan super user.
 
 Link percakapan dengan AI: https://share.gemini.google/EXAz8Jqw2naM
