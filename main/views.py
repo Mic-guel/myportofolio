@@ -104,6 +104,7 @@ def show_achievements(request):
         "name": "Micguel Katili",
         "title_query": title_query,
         "is_editor" : is_editor,
+        "form" : ProjectForm(),
     }
     return render(request, "achievement.html", context)
 
@@ -281,6 +282,28 @@ def create_project_ajax(request):
         project = form.save()
         return JsonResponse(
             {"message": "Proyek berhasil ditambahkan.", "pk": str(project.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
+
+from django.views.decorators.http import require_POST
+
+...
+
+@require_POST
+def create_achievement_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan proyek."},
+            status=403,
+        )
+
+    form = AchievementForm(request.POST)
+    if form.is_valid():
+        achievement = form.save()
+        return JsonResponse(
+            {"message": "Achievement successfully added.", "pk": str(achievement.id)},
             status=201,
         )
 

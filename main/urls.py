@@ -19,6 +19,7 @@ urlpatterns = [
     path("projects/<uuid:project_id>/delete/",delete_project,name="delete_project"),
     path("projects/edit/<uuid:project_id>/", edit_project, name="edit_project"),
     path("projects/add-ajax/", create_project_ajax, name="create_project_ajax"),
+    path("projects/add-ajax/", create_achievement_ajax, name="create_achievement_ajax"),
 
     path("register/", register, name="register"),
     path("login/", login_user, name="login"),
