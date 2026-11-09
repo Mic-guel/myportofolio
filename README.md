@@ -2,6 +2,37 @@ Nama: Micguel Katili
 NPM: 2506588065
 Kelas: PBP D
 
+==========Tugas 6==========
+Update: Mengimplementasikan Django REST Framework (DRF) pada model Achievement dengan role-based permissions (IsPortfolioOwnerOrEditorOrReadOnly), modal Edit interaktif untuk Superuser & Editor via PATCH API, serta fitur ekstra interaktif berupa filter "Show Starred" dan live counter badge pada antarmuka AJAX.
+
+1. REST tidak hanya berupa format respons. Mengembalikan JSON tidak berarti API tersebut RESTful jika belum memenuhi prinsip seperti Uniform Interface.
+PUT: Mengganti suatu data keseluruhan, misalnya mengganti seluruh informasi/atribut pada data
+PATCH: Mengganti salah satu informasi data, misalnya hanya mengganti nomor telfon pada suatu tuple of data
+
+2. Peran Serializer pada Django REST Framework
+Serializer bertugas menerjemahkan tipe data kompleks (seperti QuerySet atau model instance Django) menjadi tipe data native Python agar mudah dirender menjadi JSON/XML. Serializer juga menangani deserialisasi (mengubah JSON kembali menjadi objek Python) sekaligus melakukan validasi data secara otomatis.
+Keuntungannya dibandingkan merakit dictionary secara manual untuk JsonResponse:
+-Efisiensi kode.
+Serializer otomatis memetakan field model, menghilangkan kebutuhan menulis konversi dictionary secara berulang (boilerplate code).
+-Validasi otomatis: Serializer langsung memvalidasi tipe data, batas panjang karakter, dan konstrain lainnya sebelum data disimpan ke database.
+-Relasi data: Menangani nested relationship antar tabel/model (seperti Foreign Key) jauh lebih rapi.
+
+3. Autentikasi vs Otorisasi dan Keamanan API
+
+Autentikasi: Proses memverifikasi identitas pengguna (memastikan siapa yang mengakses aplikasi, biasanya lewat mekanisme login).
+
+Otorisasi: Proses menentukan hak akses (memastikan apa yang boleh diakses atau diubah oleh pengguna tersebut).
+
+Menyembunyikan tombol di template atau HTML hanyalah manipulasi antarmuka klien. Pengguna yang mengetahui URL endpoint dapat dengan mudah melewati antarmuka tersebut dan mengirim request modifikasi data secara langsung menggunakan tools seperti Postman, cURL, atau script otomatis. Permission class memastikan otorisasi diterapkan pada level server, menolak request secara absolut jika tidak memiliki hak akses.
+
+4. Saat API menggunakan SessionAuthentication, kredensial pengguna disimpan dalam cookie. Browser secara otomatis melampirkan cookie ini ke setiap request yang mengarah ke domain server, terlepas dari mana asal request tersebut. Token CSRF diwajibkan untuk memastikan bahwa request modifikasi (POST, PUT, DELETE) benar-benar berasal dari frontend aplikasi yang sah, bukan dari situs pihak ketiga yang mencoba memanfaatkan cookie sesi yang sedang aktif.
+
+Penggunaan force_authenticate dalam testing DRF dirancang untuk memotong (bypass) lapisan middleware dan proses evaluasi autentikasi reguler, dengan cara menyuntikkan objek user langsung ke dalam request. Akibat jalan pintas ini, mekanisme pengecekan CSRF ikut terlewati, sehingga pengujian tersebut tidak dapat memvalidasi apakah perlindungan CSRF di aplikasi berfungsi dengan benar di kondisi nyata.
+
+Saya mengakui jawaban saya dibantu oleh AI
+==========Tugas 6==========
+
+==========Tugas 5==========
 Update: Mengaplikasikan tutorial 5 pada page lain
 
 Link percakapan dengan AI: https://share.gemini.google/VoFaQJvRabLe

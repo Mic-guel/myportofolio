@@ -32,7 +32,9 @@
                         class="project-search__input"
                         aria-label="Search base on achievement's name">
                 <button type="submit" class="button-a">Search</button>
+                <button type="button" id="filter-star-btn" class="button-a" style="margin-left: 0.5rem;">★ Show Starred</button>
             </form>
+            <div id="achievement-counter" style="margin: 0.75rem 0 0 0; font-size: 0.95rem; font-weight: 600; opacity: 0.9;"></div>
 
             <!-- Loading State -->
             <div id="loading" class="empty-state hide">
@@ -125,7 +127,11 @@ const searchForm = document.getElementById('achievement-search-form');
 const searchInput = document.getElementById('search-input');
 const achievementForm = document.getElementById('achievement-form');
 const editForm = document.getElementById('edit-achievement-form');
+const filterStarBtn = document.getElementById('filter-star-btn');
+const counterElement = document.getElementById('achievement-counter');
 const achievementsById = new Map();
+let allAchievements = [];
+let filterStarredOnly = false;
 let achievementsAbortController;
 let searchDebounceTimer;
 
@@ -184,6 +190,22 @@ function buildAchievementCardElement(achievement) {
     return article;
 }
 
+function renderAchievementsList() {
+    const displayed = filterStarredOnly
+        ? allAchievements.filter(item => item.is_starred)
+        : allAchievements;
+
+    gridContainer.replaceChildren(...displayed.map(buildAchievementCardElement));
+    displayPageSection({ showGrid: displayed.length > 0, showEmpty: displayed.length === 0 });
+
+    if (counterElement) {
+        const query = searchInput.value.trim();
+        const filterNote = filterStarredOnly ? ' (starred only)' : '';
+        const queryNote = query ? ` matching "${escapeHtml(query)}"` : '';
+        counterElement.textContent = `Showing ${displayed.length} of ${allAchievements.length} achievement${allAchievements.length === 1 ? '' : 's'}${filterNote}${queryNote}`;
+    }
+}
+
 async function fetchAchievements(searchQuery = '') {
     if (achievementsAbortController) achievementsAbortController.abort();
     achievementsAbortController = new AbortController();
@@ -199,13 +221,12 @@ async function fetchAchievements(searchQuery = '') {
         });
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const achievements = await response.json();
+        allAchievements = await response.json();
 
         achievementsById.clear();
-        achievements.forEach(item => achievementsById.set(String(item.id), item));
+        allAchievements.forEach(item => achievementsById.set(String(item.id), item));
 
-        gridContainer.replaceChildren(...achievements.map(buildAchievementCardElement));
-        displayPageSection({ showGrid: achievements.length > 0, showEmpty: achievements.length === 0 });
+        renderAchievementsList();
     } catch (error) {
         if (error.name === 'AbortError') return;
         console.error(error);
@@ -317,6 +338,19 @@ gridContainer.addEventListener('click', async function(event) {
         button.disabled = false;
     }
 });
+
+if (filterStarBtn) {
+    filterStarBtn.addEventListener('click', function() {
+        filterStarredOnly = !filterStarredOnly;
+        filterStarBtn.textContent = filterStarredOnly ? '★ Show All' : '★ Show Starred';
+        renderAchievementsList();
+        showToast(
+            'Filter Diterapkan',
+            filterStarredOnly ? 'Menampilkan hanya achievement yang dibintangi.' : 'Menampilkan semua achievement.',
+            'normal'
+        );
+    });
+}
 
 searchInput.addEventListener('input', function() {
     clearTimeout(searchDebounceTimer);
