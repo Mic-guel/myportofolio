@@ -5,6 +5,8 @@ Kelas: PBP D
 ==========Tugas 6==========
 Update: Mengimplementasikan Django REST Framework (DRF) pada model Achievement dengan role-based permissions (IsPortfolioOwnerOrEditorOrReadOnly), modal Edit interaktif untuk Superuser & Editor via PATCH API, serta fitur ekstra interaktif berupa filter "Show Starred" dan live counter badge pada antarmuka AJAX.
 
+Link percakapan dengan AI: https://share.gemini.google/4j9azQUMtiml
+
 1. REST tidak hanya berupa format respons. Mengembalikan JSON tidak berarti API tersebut RESTful jika belum memenuhi prinsip seperti Uniform Interface.
 PUT: Mengganti suatu data keseluruhan, misalnya mengganti seluruh informasi/atribut pada data
 PATCH: Mengganti salah satu informasi data, misalnya hanya mengganti nomor telfon pada suatu tuple of data
