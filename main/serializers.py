@@ -45,14 +45,20 @@ class ProjectSerializer(serializers.ModelSerializer):
 class AchievementSerializer(serializers.ModelSerializer):
     star_count = serializers.SerializerMethodField()
     is_starred = serializers.SerializerMethodField()
+    starred_by_names = serializers.SerializerMethodField()
 
     class Meta:
         model = Achievement
         fields = [
-            "id", "title", "description", "month_year", 
-            "achievement_image_url", "star_count", "is_starred"
+            "id", "title", "description", "month_year",
+            "achievement_image_url", "star_count", "is_starred",
+            "starred_by_names",
         ]
         read_only_fields = ["id"]
+        extra_kwargs = {
+            "month_year": {"required": False, "allow_blank": True},
+            "achievement_image_url": {"required": False, "allow_blank": True, "allow_null": True},
+        }
 
     def validate_title(self, value):
         value = strip_tags(value).strip()
@@ -74,3 +80,6 @@ class AchievementSerializer(serializers.ModelSerializer):
         if request is None or not request.user.is_authenticated:
             return False
         return request.user in obj.starred_by.all()
+
+    def get_starred_by_names(self, obj):
+        return ", ".join(user.username for user in obj.starred_by.all())

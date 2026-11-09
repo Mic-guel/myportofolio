@@ -10,6 +10,7 @@ class ProjectForm(ModelForm):
         fields = [
             "title",
             "description",
+            "tech_stack",
             "project_url",
             "project_image_url",
         ]
@@ -17,6 +18,7 @@ class ProjectForm(ModelForm):
         labels = {
             "title": "Project's Name",
             "description": "Project's Description",
+            "tech_stack": "Tech Stack",
             "project_url": "Supporting Project's URL",
             "project_image_url": "Project Picture's URL",
         }
@@ -32,6 +34,12 @@ class ProjectForm(ModelForm):
                 attrs={
                     "placeholder": "Describe the project.",
                     "rows": 3,
+                }
+            ),
+            "tech_stack": TextInput(
+                attrs={
+                    "placeholder": "Django, Python, HTML, CSS",
+                    "maxlength": 255,
                 }
             ),
             "project_url": URLInput(
@@ -64,12 +72,14 @@ class AchievementForm(ModelForm):
         fields = [
             "title",
             "description",
+            "month_year",
             "achievement_image_url",
         ]
 
         labels = {
             "title": "Achievement's Name",
             "description": "Achievement's Description",
+            "month_year": "Month & Year",
             "achievement_image_url": "Achievement Picture's URL",
         }
 
@@ -86,6 +96,12 @@ class AchievementForm(ModelForm):
                     "rows": 3,
                 }
             ),
+            "month_year": TextInput(
+                attrs={
+                    "placeholder": "October 2026",
+                    "maxlength": 31,
+                }
+            ),
             "achievement_image_url": URLInput(
                 attrs={
                     "placeholder": "https://drive.google.com/",
@@ -100,3 +116,6 @@ class AchievementForm(ModelForm):
 
     def clean_description(self):
         return strip_tags(self.cleaned_data["description"]).strip()
+
+    def clean_month_year(self):
+        return strip_tags(self.cleaned_data.get("month_year", "")).strip()

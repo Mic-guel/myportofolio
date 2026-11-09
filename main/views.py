@@ -15,9 +15,6 @@ from django.views.decorators.http import require_POST
 
 from django.http import JsonResponse
 
-from rest_framework.decorators import permission_classes
-from permissions import IsPortfolioOwnerOrEditorOrReadOnly
-
 from main.models import Experience, Achievement, Project
 from main.forms import*
 
@@ -143,13 +140,12 @@ def delete_achievement(request, achievement_id):
 
     return redirect("main:show_achievements")
 
-@permission_classes([IsPortfolioOwnerOrEditorOrReadOnly])
 def get_achievements_json(request):
     title_query = request.GET.get("title", "").strip()
     achievements = Achievement.objects.prefetch_related('starred_by').all()
 
     if title_query:
-        achievements = achievement.filter(title__icontains=title_query)
+        achievements = achievements.filter(title__icontains=title_query)
 
     # Konstruksi data JSON secara manual agar bisa menyisipkan logika Star
     data = []
@@ -243,7 +239,6 @@ def edit_project(request, project_id):
     }
     return render(request, 'edit_project.html', context)
 
-@permission_classes([IsPortfolioOwnerOrEditorOrReadOnly])
 def get_projects_json(request):
     title_query = request.GET.get("title", "").strip()
     projects = Project.objects.prefetch_related('starred_by').all()

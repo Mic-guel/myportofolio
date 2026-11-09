@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from main.models import Project
+from main.models import Project, Achievement
 
 
 class ProjectAPITest(APITestCase):
@@ -129,6 +129,175 @@ class ProjectAPITest(APITestCase):
         client = APIClient(enforce_csrf_checks=True)
         client.login(username="owner", password="test-password")
         # The Browsable API form renders a real CSRF token into the response.
+        page = client.get(self.list_url, HTTP_ACCEPT="text/html")
+        self.assertEqual(page.status_code, status.HTTP_200_OK)
+        token = client.cookies["csrftoken"].value
+        response = client.post(
+            self.list_url, self.payload, format="json", HTTP_X_CSRFTOKEN=token,
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+class AchievementAPITest(APITestCase):
+    def setUp(self):
+        self.owner = User.objects.create_superuser(
+            username="owner_achv", password="test-password", email="owner@achv.com",
+        )
+        self.visitor = User.objects.create_user(username="visitor_achv", password="test-password")
+
+        self.editor = User.objects.create_user(username="editor_achv", password="test-password")
+        editor_group, _ = Group.objects.get_or_create(name="Editor")
+        self.editor.groups.add(editor_group)
+
+        self.achievement = Achievement.objects.create(
+            title="Juara 1 Web Design",
+            description="Lomba bikin web UI/UX",
+            month_year="Oktober 2026",
+        )
+
+        self.list_url = reverse("api:achievement-list")
+        self.detail_url = reverse("api:achievement-detail", args=[self.achievement.id])
+        self.star_url = reverse("api:achievement-star", args=[self.achievement.id])
+
+        self.payload = {
+            "title": "Juara 2 Hackathon",
+            "description": "Bikin AI Model",
+            "month_year": "November 2026",
+            "achievement_image_url": "",
+        }
+
+    def test_public_list_and_detail(self):
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]["id"], str(self.achievement.id))
+        self.assertFalse(response.data[0]["is_starred"])
+        self.assertNotIn("fields", response.data[0])
+        self.assertEqual(self.client.get(self.detail_url).status_code, status.HTTP_200_OK)
+
+    def test_search_and_empty_results(self):
+        response = self.client.get(self.list_url, {"title": "WEB"})
+        self.assertEqual(len(response.data), 1)
+        response = self.client.get(self.list_url, {"title": "not-found"})
+        self.assertEqual(response.data, [])
+
+    def test_missing_achievement(self):
+        url = reverse("api:achievement-detail", args=[uuid.uuid4()])
+        self.assertEqual(self.client.get(url).status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_guest_and_visitor_cannot_write(self):
+        for user in (None, self.visitor):
+            self.client.force_authenticate(user=user)
+            self.assertEqual(self.client.post(self.list_url, self.payload, format="json").status_code, 403)
+            self.assertEqual(self.client.patch(self.detail_url, {"title": "Hack"}, format="json").status_code, 403)
+            self.assertEqual(self.client.delete(self.detail_url).status_code, 403)
+
+        self.assertEqual(Achievement.objects.count(), 1)
+        self.achievement.refresh_from_db()
+        self.assertEqual(self.achievement.title, "Juara 1 Web Design")
+
+    def test_editor_can_patch_but_cannot_create_or_delete(self):
+        self.client.force_authenticate(user=self.editor)
+
+        self.assertEqual(self.client.post(self.list_url, self.payload, format="json").status_code, 403)
+        self.assertEqual(Achievement.objects.count(), 1)
+
+        self.assertEqual(self.client.delete(self.detail_url).status_code, 403)
+        self.assertTrue(Achievement.objects.filter(pk=self.achievement.id).exists())
+
+        response = self.client.patch(self.detail_url, {"title": "Juara 1 Lomba IT"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.achievement.refresh_from_db()
+        self.assertEqual(self.achievement.title, "Juara 1 Lomba IT")
+        self.assertEqual(self.achievement.description, "Lomba bikin web UI/UX")
+        self.assertEqual(Achievement.objects.count(), 1)
+
+    def test_owner_can_do_everything(self):
+        self.client.force_authenticate(user=self.owner)
+
+        response_post = self.client.post(self.list_url, self.payload, format="json")
+        self.assertEqual(response_post.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Achievement.objects.count(), 2)
+
+        response_patch = self.client.patch(self.detail_url, {"title": "Updated Owner Title"}, format="json")
+        self.assertEqual(response_patch.status_code, status.HTTP_200_OK)
+        self.achievement.refresh_from_db()
+        self.assertEqual(self.achievement.title, "Updated Owner Title")
+
+        response_delete = self.client.delete(self.detail_url)
+        self.assertEqual(response_delete.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response_delete.content, b"")
+        self.assertEqual(Achievement.objects.count(), 1)
+
+    def test_validation_and_xss(self):
+        self.client.force_authenticate(user=self.owner)
+
+        for changes, field in [
+            ({"title": "   "}, "title"),
+            ({"title": '<img src="x" onerror="alert(1)">'}, "title"),
+            ({"achievement_image_url": "javascript:alert(1)"}, "achievement_image_url"),
+        ]:
+            response = self.client.post(self.list_url, {**self.payload, **changes}, format="json")
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertIn(field, response.data)
+        self.assertEqual(Achievement.objects.count(), 1)
+
+        payload_xss = {
+            "title": '<script>alert("hack")</script>Cihuy',
+            "description": "<b>Keren</b>",
+            "month_year": "2026",
+        }
+        response = self.client.post(self.list_url, payload_xss, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["title"], 'alert("hack")Cihuy')
+        self.assertEqual(response.data["description"], "Keren")
+
+    def test_star_requires_login(self):
+        self.assertEqual(self.client.post(self.star_url).status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(self.achievement.starred_by.count(), 0)
+
+        self.client.force_authenticate(user=self.visitor)
+        response = self.client.post(self.star_url)
+        self.assertTrue(response.data["is_starred"])
+        self.assertEqual(response.data["star_count"], 1)
+
+        response = self.client.post(self.star_url)
+        self.assertFalse(response.data["is_starred"])
+        self.assertEqual(response.data["star_count"], 0)
+
+    def test_computed_fields_are_read_only(self):
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.post(self.list_url, {
+            **self.payload, "star_count": 99, "is_starred": True,
+            "starred_by_names": "forged", "starred_by": [self.visitor.id],
+        }, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["star_count"], 0)
+        self.assertFalse(response.data["is_starred"])
+
+    def test_session_write_without_csrf_is_rejected(self):
+        client = APIClient(enforce_csrf_checks=True)
+        self.assertTrue(client.login(username="owner_achv", password="test-password"))
+
+        response = client.post(self.list_url, self.payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Achievement.objects.count(), 1)
+
+    def test_session_write_with_csrf_succeeds(self):
+        client = APIClient(enforce_csrf_checks=True)
+        client.login(username="owner_achv", password="test-password")
+        page = client.get(self.list_url, HTTP_ACCEPT="text/html")
+        self.assertEqual(page.status_code, status.HTTP_200_OK)
+        token = client.cookies["csrftoken"].value
+        response = client.post(
+            self.list_url, self.payload, format="json", HTTP_X_CSRFTOKEN=token,
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+    def test_session_write_with_csrf_succeeds(self):
+        client = APIClient(enforce_csrf_checks=True)
+        client.login(username="owner_achv", password="test-password")
         page = client.get(self.list_url, HTTP_ACCEPT="text/html")
         self.assertEqual(page.status_code, status.HTTP_200_OK)
         token = client.cookies["csrftoken"].value
