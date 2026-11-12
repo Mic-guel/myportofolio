@@ -1,0 +1,366 @@
+{% extends "base1.html" %}
+{% block meta %}
+<title>Achievements - {{ name }}</title>
+{% endblock meta %}
+    
+{% block content %} 
+<main>
+    <section class="section-a" id="achievement">
+        <div class="container">
+            <p class="hero-kicker">My achievement so far...</p>
+            <div class="bar-a">
+                <button class="button button-secondary" onclick="showToast('Notifikasi Sistem', 'Achievement berhasil dimuat dengan baik!', 'success')">
+                    Test Toast Notifikasi
+                </button>
+                <h1 class="h1-a">Achievements</h1>
+                {% if user.is_superuser %}
+                <button type="button"
+                        class="button-a project-add-button"
+                        popovertarget="add-achievement-modal">
+                    <span aria-hidden="true">+</span>
+                    Add achievement
+                </button>
+                {% endif %}
+            </div>                  
+            
+            <form id="achievement-search-form" class="achievement-search">
+                <input type="search"
+                        id="search-input"
+                        name="title"
+                        value="{{ title_query }}"
+                        placeholder="Search based on achievement's name"
+                        class="project-search__input"
+                        aria-label="Search base on achievement's name">
+                <button type="submit" class="button-a">Search</button>
+                <button type="button" id="filter-star-btn" class="button-a" style="margin-left: 0.5rem;">★ Show Starred</button>
+            </form>
+            <div id="achievement-counter" style="margin: 0.75rem 0 0 0; font-size: 0.95rem; font-weight: 600; opacity: 0.9;"></div>
+
+            <!-- Loading State -->
+            <div id="loading" class="empty-state hide">
+                <p>Loading achievements...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error" class="empty-state hide">
+                <p>Failed to load data of achievements. Try again!</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty" class="empty-state hide">
+                <p>No achievement has been added/no achievement was found.</p>
+            </div>
+
+            <div id="grid" class="experience-grid project-grid hide"></div>
+        </div>
+    </section>
+</main>
+
+{% if user.is_superuser %}
+    {% include "components/achievement_form_modal.html" %}
+{% endif %}
+    
+<!-- MODAL EDIT INI UNTUK SUPERUSER & EDITOR -->
+{% if user.is_superuser or is_editor %}
+<div id="edit-achievement-modal"
+     class="project-form-modal"
+     popover="auto"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="edit-achievement-modal-title">
+    <button type="button"
+            class="project-form-modal__backdrop"
+            popovertarget="edit-achievement-modal"
+            popovertargetaction="hide"
+            aria-label="Close edit achievement form"></button>
+    <div class="project-form-modal__content">
+        <button type="button"
+                class="project-form-modal__close"
+                popovertarget="edit-achievement-modal"
+                popovertargetaction="hide"
+                aria-label="Close edit achievement form">×</button>
+        <h2 id="edit-achievement-modal-title">Edit Achievement</h2>
+        <form id="edit-achievement-form" class="project-form">
+            <input type="hidden" id="edit-id" name="id">
+            <div class="form-group">
+                <label for="edit-title">Achievement's Name</label>
+                <input type="text" id="edit-title" name="title" maxlength="255" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-description">Achievement's Description</label>
+                <textarea id="edit-description" name="description" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="edit-month-year">Month & Year</label>
+                <input type="text" id="edit-month-year" name="month_year" maxlength="31">
+            </div>
+            <div class="form-group">
+                <label for="edit-image-url">Achievement Picture's URL</label>
+                <input type="url" id="edit-image-url" name="achievement_image_url">
+            </div>
+            <div class="project-form-modal__actions">
+                <button type="button"
+                        class="button button-secondary"
+                        popovertarget="edit-achievement-modal"
+                        popovertargetaction="hide">Cancel</button>
+                <button type="submit" class="button">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+{% csrf_token %}
+<script>
+const BASE_ACHIEVEMENTS_ENDPOINT = "{% url 'api:achievement-list' %}";
+const DETAIL_ACHIEVEMENT_ENDPOINT = "{% url 'api:achievement-detail' '00000000-0000-0000-0000-000000000000' %}";
+const STAR_ACHIEVEMENT_ENDPOINT = "{% url 'api:achievement-star' '00000000-0000-0000-0000-000000000000' %}";
+const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+const IS_EDITOR = "{{ is_editor|yesno:'true,false' }}" === "true";
+const IS_AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+
+const loadingState = document.getElementById('loading');
+const errorState = document.getElementById('error');
+const emptyState = document.getElementById('empty');
+const gridContainer = document.getElementById('grid');
+const searchForm = document.getElementById('achievement-search-form');
+const searchInput = document.getElementById('search-input');
+const achievementForm = document.getElementById('achievement-form');
+const editForm = document.getElementById('edit-achievement-form');
+const filterStarBtn = document.getElementById('filter-star-btn');
+const counterElement = document.getElementById('achievement-counter');
+const achievementsById = new Map();
+let allAchievements = [];
+let filterStarredOnly = false;
+let achievementsAbortController;
+let searchDebounceTimer;
+
+function getCookie(name) {
+    const prefix = `${name}=`;
+    const cookie = document.cookie.split(';').map(value => value.trim())
+        .find(value => value.startsWith(prefix));
+    return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
+}
+
+function escapeHtml(value) {
+    return String(value ?? '').replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+}
+
+function achievementEndpoint(pattern, id) {
+    return pattern.replace('00000000-0000-0000-0000-000000000000', id);
+}
+
+function displayPageSection({ showLoading = false, showError = false,
+    showEmpty = false, showGrid = false }) {
+    loadingState.classList.toggle('hide', !showLoading);
+    errorState.classList.toggle('hide', !showError);
+    emptyState.classList.toggle('hide', !showEmpty);
+    gridContainer.classList.toggle('hide', !showGrid);
+}
+
+function buildAchievementCardElement(achievement) {
+    const article = document.createElement('article');
+    article.className = 'experience-card';
+
+    const image = achievement.achievement_image_url
+        ? `<img src="${escapeHtml(achievement.achievement_image_url)}" alt="${escapeHtml(achievement.title)}" class="project-image">` : '';
+
+    const star = IS_AUTHENTICATED
+        ? `<button type="button" class="button button-star${achievement.is_starred ? ' is-starred' : ''}"
+            data-action="star" data-id="${escapeHtml(achievement.id)}"
+            title="${escapeHtml(achievement.starred_by_names)}">
+            <span aria-hidden="true">★</span> ${achievement.is_starred ? 'Unstar' : 'Star'} (${achievement.star_count})</button>`
+        : `<a href="{% url 'main:login' %}" class="button">Login to star (${achievement.star_count})</a>`;
+
+    const edit = (IS_SUPERUSER || IS_EDITOR)
+        ? `<button type="button" class="button button-secondary" data-action="edit"
+            data-id="${escapeHtml(achievement.id)}">Edit</button>` : '';
+
+    const remove = IS_SUPERUSER
+        ? `<button type="button" class="button button-danger" data-action="delete"
+            data-id="${escapeHtml(achievement.id)}">Delete</button>` : '';
+
+    article.innerHTML = `${image}<h2>${escapeHtml(achievement.title)}</h2>
+        <p class="experience-description">${escapeHtml(achievement.description)}</p>
+        <h5>${escapeHtml(achievement.month_year)}</h5>
+        <div class="project-card-actions"><div class="project-actions">
+        ${star}${edit}${remove}</div></div>`;
+    return article;
+}
+
+function renderAchievementsList() {
+    const displayed = filterStarredOnly
+        ? allAchievements.filter(item => item.is_starred)
+        : allAchievements;
+
+    gridContainer.replaceChildren(...displayed.map(buildAchievementCardElement));
+    displayPageSection({ showGrid: displayed.length > 0, showEmpty: displayed.length === 0 });
+
+    if (counterElement) {
+        const query = searchInput.value.trim();
+        const filterNote = filterStarredOnly ? ' (starred only)' : '';
+        const queryNote = query ? ` matching "${escapeHtml(query)}"` : '';
+        counterElement.textContent = `Showing ${displayed.length} of ${allAchievements.length} achievement${allAchievements.length === 1 ? '' : 's'}${filterNote}${queryNote}`;
+    }
+}
+
+async function fetchAchievements(searchQuery = '') {
+    if (achievementsAbortController) achievementsAbortController.abort();
+    achievementsAbortController = new AbortController();
+
+    try {
+        displayPageSection({ showLoading: true });
+        const url = new URL(BASE_ACHIEVEMENTS_ENDPOINT, window.location.origin);
+        if (searchQuery) url.searchParams.set('title', searchQuery);
+
+        const response = await fetch(url, {
+            headers: { Accept: 'application/json' },
+            signal: achievementsAbortController.signal,
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        allAchievements = await response.json();
+
+        achievementsById.clear();
+        allAchievements.forEach(item => achievementsById.set(String(item.id), item));
+
+        renderAchievementsList();
+    } catch (error) {
+        if (error.name === 'AbortError') return;
+        console.error(error);
+        displayPageSection({ showError: true });
+    }
+}
+
+function apiErrorMessage(data, status) {
+    const messages = Object.values(data).flat().filter(value => typeof value === 'string');
+    return messages.join(' ') || `Request failed (HTTP ${status}).`;
+}
+
+async function writeAchievement(url, method, payload) {
+    const response = await fetch(url, {
+        method,
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: payload === undefined ? undefined : JSON.stringify(payload),
+    });
+    if (response.status === 204) return null;
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(apiErrorMessage(data, response.status));
+    return data;
+}
+
+async function addAchievement(event) {
+    event.preventDefault();
+    const button = achievementForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+        const fields = new FormData(achievementForm);
+        const payload = Object.fromEntries([
+            'title', 'description', 'month_year', 'achievement_image_url',
+        ].map(name => [name, fields.get(name) ?? '']));
+        await writeAchievement(BASE_ACHIEVEMENTS_ENDPOINT, 'POST', payload);
+        achievementForm.reset();
+        document.getElementById('add-achievement-modal').hidePopover();
+        showToast('Success', 'Achievement created.', 'success');
+        await fetchAchievements(searchInput.value.trim());
+    } catch (error) {
+        showToast('Could not create achievement', error.message, 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+if (achievementForm) achievementForm.addEventListener('submit', addAchievement);
+
+function openEditModal(id) {
+    const achievement = achievementsById.get(String(id));
+    if (!achievement) return;
+    document.getElementById('edit-id').value = achievement.id;
+    document.getElementById('edit-title').value = achievement.title ?? '';
+    document.getElementById('edit-description').value = achievement.description ?? '';
+    document.getElementById('edit-month-year').value = achievement.month_year ?? '';
+    const imageInput = document.getElementById('edit-image-url');
+    if (imageInput) imageInput.value = achievement.achievement_image_url ?? '';
+    document.getElementById('edit-achievement-modal').showPopover();
+}
+
+async function updateAchievement(event) {
+    event.preventDefault();
+    const button = editForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+        const id = document.getElementById('edit-id').value;
+        const fields = new FormData(editForm);
+        const payload = Object.fromEntries([
+            'title', 'description', 'month_year', 'achievement_image_url',
+        ].map(name => [name, fields.get(name) ?? '']));
+        await writeAchievement(achievementEndpoint(DETAIL_ACHIEVEMENT_ENDPOINT, id), 'PATCH', payload);
+        document.getElementById('edit-achievement-modal').hidePopover();
+        showToast('Success', 'Achievement updated.', 'success');
+        await fetchAchievements(searchInput.value.trim());
+    } catch (error) {
+        showToast('Could not update achievement', error.message, 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+if (editForm) editForm.addEventListener('submit', updateAchievement);
+
+gridContainer.addEventListener('click', async function(event) {
+    const button = event.target.closest('button[data-action]');
+    if (!button || button.disabled) return;
+    const action = button.dataset.action;
+    const id = button.dataset.id;
+
+    if (action === 'edit') {
+        openEditModal(id);
+        return;
+    }
+    if (action === 'delete' && !window.confirm('Delete this achievement?')) return;
+
+    button.disabled = true;
+    try {
+        const pattern = action === 'star' ? STAR_ACHIEVEMENT_ENDPOINT : DETAIL_ACHIEVEMENT_ENDPOINT;
+        await writeAchievement(achievementEndpoint(pattern, id),
+            action === 'star' ? 'POST' : 'DELETE');
+        showToast('Success', action === 'star' ? 'Star updated.' : 'Achievement deleted.', 'success');
+        await fetchAchievements(searchInput.value.trim());
+    } catch (error) {
+        showToast('Request failed', error.message, 'error');
+    } finally {
+        button.disabled = false;
+    }
+});
+
+if (filterStarBtn) {
+    filterStarBtn.addEventListener('click', function() {
+        filterStarredOnly = !filterStarredOnly;
+        filterStarBtn.textContent = filterStarredOnly ? '★ Show All' : '★ Show Starred';
+        renderAchievementsList();
+        showToast(
+            'Filter Diterapkan',
+            filterStarredOnly ? 'Menampilkan hanya achievement yang dibintangi.' : 'Menampilkan semua achievement.',
+            'normal'
+        );
+    });
+}
+
+searchInput.addEventListener('input', function() {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => fetchAchievements(searchInput.value.trim()), 300);
+});
+searchForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    clearTimeout(searchDebounceTimer);
+    fetchAchievements(searchInput.value.trim());
+});
+fetchAchievements(searchInput.value.trim());
+</script>
+{% endblock content %}
